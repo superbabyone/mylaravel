@@ -1,0 +1,22 @@
+<table id="demo" lay-filter="test"></table>
+
+
+<script type="text/javascript">
+layui.use(['table','layer','jquery'],function(){
+	var table = layui.table,layer = layui.layer, $ = layui.jquery;
+
+	table.render({
+		elem:'#demo', 
+		url:"{:url('indexData')}", 
+		title: '图书列表',
+		cols:[[
+			{field: 'id', title: '编号'},
+			{field: 'book_name', title: '图书名称',align:'center',style:'background-color: #aaa; color: #aff;font-size:10px'},
+			{field: 'book_author', title: '图书作者'},
+			{field: 'open_time', title: '添加时间'},
+            {field: 'book_content', title: '图书内容'},
+		]]
+	});
+	
+});
+</script>

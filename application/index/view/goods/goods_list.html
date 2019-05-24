@@ -1,0 +1,211 @@
+<script type="text/javascript" src="__STATIC__/index/js/n_nav.js"></script>
+{include file="public/nav"/}
+<body>
+<!--Begin Menu Begin-->
+
+<!--End Menu End--> 
+<div class="i_bg">
+	<div class="postion">
+    	<span class="fl">全部 > 美妆个护 > 香水 > </span>
+        <span class="n_ch" id="brand_c" style="display: none">
+            <span class="fl" >品牌：<font id="brand"></font></span>
+            <a href="#"><img src="__STATIC__/index/images/s_close.gif" /></a>
+        </span>
+        <span class="n_ch" id="price_a" style="display: none">
+            <span class="f2" >价格：<font id="brand_b"></font></span>
+            <a href="#"><img src="__STATIC__/index/images/s_close.gif" /></a>
+        </span>
+    </div>
+    <!--Begin 筛选条件 Begin-->
+    <div class="content mar_10">
+    	<table border="0" class="choice" style="width:100%; font-family:'宋体'; margin:0 auto;" cellspacing="0" cellpadding="0">
+          <tr valign="top">
+            <td width="70">&nbsp; 品牌：</td>
+            <td class="td_a">
+                {volist name="brandInfo" id="v"}
+                <a href="#" class="brand_a" brand_id="{$v.brand_id}">{$v.brand_name}</a>
+                {/volist}
+            </td>
+          </tr>
+          <tr valign="top">
+            <td>&nbsp; 价格：</td>                                      
+            <td class="td_b" id="td_a">
+                {volist name="goodsPrice" id='v'}
+                <a href="#" class="price">{$v}</a>
+                {/volist}
+            </td>
+          </tr>                                                                                                     
+        </table>                                                                                 
+    </div>
+    <!--End 筛选条件 End-->
+    <div class="content mar_20">
+    	<div class="l_history">
+        	<div class="his_t">
+            	<span class="fl">浏览历史</span>
+                <span class="fr"><a href="#">清空</a></span>
+            </div>
+        	<ul>
+                {volist name="historyInfo" id="v"}
+            	<li>
+                    <div class="img"><a href="#"><img src="/uploads/{$v.goods_img}" width="185" height="162" /></a></div>
+                	<div class="name"><a href="#">{$v.goods_name}</a></div>
+                    <div class="price">
+                    	<font>￥<span>{$v.shop_price}</span></font> &nbsp; 
+                    </div>
+                </li>
+                {/volist}
+        	</ul>
+        </div>
+        <div class="l_list">
+        	<div class="list_t">
+            	<span class="fl list_or" id="checked">
+                	<a href="#" type='1' condition="goods_number">默认</a>
+                    <a href="#" type='2' condition="goods_number">
+                    	<span class="fl" >库存</span>                        
+                        <span>↑</span>                                                    
+                    </a>
+                    <a href="#" type='2' condition="shop_price">
+                    	<span class="fl">价格</span>                        
+                        <span>↑</span>    
+                    </a>
+                    <a href="#" type='3' condition="is_new">新品</a>
+                </span>
+                <span class="fr">共发现120件</span>
+            </div>
+            <div class="list_c" id="achen">
+            	
+                <ul class="cate_list">
+                    {volist name="goodsInfo" id="v"}
+                	<li>
+                    	<div class="img"><a href="{:url('goods/goodsinfo')}?goods_id={$v.goods_id}"><img src="/uploads/{$v.goods_img}" width="210" height="185" /></a></div>
+                        <div class="price">
+                            <font>￥<span>{$v.shop_price}</span></font> &nbsp; 26R
+                        </div>
+                        <div class="name"><a href="#">{$v.goods_name}</a></div>
+                        <div class="carbg">
+                        	<a href="#" class="ss">收藏</a>
+                            <a href="#" class="j_car">加入购物车</a>
+                        </div>
+                    </li>
+                    {/volist}
+                </ul>
+                
+                <div class="pages">
+                    {$page|raw};
+                </div>   
+            </div>
+        </div>
+    </div>
+    <script>
+        $(function(){
+            //点击品牌
+            $('.brand_a').click(function(){
+                var _this = $(this);
+                //获取点击的文本内容  （品牌名字）
+                var brandStyle = _this.text();
+                //获取品牌ID 
+                var brand_id = _this.attr('brand_id');
+                //点击给自己加样式 同时给兄弟的样式都去掉
+                _this.addClass('now');
+                _this.siblings('a').removeClass('now');
+                //给面包屑后面改为当前点击的东西
+                $('#brand').text(brandStyle);
+                //显示面包屑后边的内容
+                $('#brand_c').show();
+                $.post(
+                    "{:url('getNewPrice')}",
+                    {brand_id:brand_id},
+                    function(msg){
+                        var _a = '';
+                        // for(i=0;i<msg.length;i++){
+                        //     _a+="<a href='javascript:;'class='price'>"+msg[i]+"</a>"
+                        // }
+                        for(var i in msg){
+                            _a+="<a href='javascript:;'class='price'>"+msg[i]+"</a>"
+                        }
+                        $('#td_a').html(_a);
+                    },
+                    'json'
+                );
+                //清空面包屑后边的价格
+                $('#price_a').hide();
+                $('#price_a').find('font').text('');
+                getGoodsInfo(1);
+            })
+            //点击价格
+            $(document).on('click','.price',function(){
+                var _this = $(this);
+                var brandStyle = _this.text();
+                _this.addClass('now');
+                _this.siblings('a').removeClass('now');
+                $('#price_a').show();
+                $('#brand_b').text(brandStyle);
+                getGoodsInfo(1);
+            })
+            //点击默认
+            $(document).on('click','#checked > a',function(){
+                var _this = $(this);
+                var type = _this.attr('type');
+                var status = _this.children('span').last('span').text();
+                _this.addClass('now');
+                _this.siblings('a').removeClass('now');
+            //    console.log(type);
+                //点击后改变样式
+                if(status=='↑'){
+                    _this.children('span').last('span').text('↓');
+                }else{
+                    _this.children('span').last('span').text('↑');
+                }
+
+                getGoodsInfo(1);
+            });
+            //点击分页
+            $(document).on('click','.page',function(){
+                var _this = $(this);
+                _this.parent('li').addClass('thispage');
+                _this.parent('li').siblings('li').removeClass('thispage');
+                var p = _this.attr('p');
+                getGoodsInfo(p);
+            })
+            //获取数据
+            function getGoodsInfo(p)
+            {
+                var brand_id = $('.td_a').children("a[class='brand_a now']").attr('brand_id');
+                var price = $('.td_b').children("a[class='price now']").text();
+                //处理默认
+                var type = $('#checked').children("a[class='now']").attr('type');
+                var condition = $('#checked').children("a[class='now']").attr('condition');
+                if(type == 1){
+                    //排序
+                   var order_field = 'goods_number';
+                   var order_type = 'desc';
+                //    console.log(order_type);
+                //    console.log(order_field);
+                }else if(type == 2){
+                    //排序
+                    var order_field = condition;
+                    var flag = $('#checked').find('span').last().text();
+                    if(flag == '↑'){
+                        var order_type = 'asc';
+                    }else{
+                        var order_type = 'desc';
+                    }
+                    // console.log(order_field);
+                    // console.log(order_type);
+                }else{
+                    //查询
+                    var field = condition;
+                    // console.log(field);
+                } 
+                $.post(
+                    "{:url('goodsNewInfo')}",
+                    {brand_id:brand_id,price:price,order_type:order_type,order_field:order_field,field:field,p:p},
+                    function(msg){
+                        // console.log(msg)
+                        $('#achen').html(msg);
+                    }
+                )
+            }
+        })
+
+    </script>

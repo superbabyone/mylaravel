@@ -1,0 +1,54 @@
+<script src="__STATIC__/layui/layui.js"></script>
+<script src="__STATIC__/login/jquery-3.2.1.min.js"></script>
+    <table border="1">
+        <tr>
+            <td>新密码</td>
+            <td><input type="password" id="pwd" name="u_pwd"></td>
+        </tr>
+        <tr>
+            <td>确认密码</td>
+            <td><input type="password" id="rePwd" name="rePwd"></td>
+        </tr>
+        <tr>
+            <td colspan="2"><input type="submit" id="aa" value="确认"></td>
+        </tr>
+    </table>
+    <script>
+        $(function(){
+            layui.use(['layer'],function(){
+                $('#aa').click(function(){
+                    var pwd = $('#pwd').val();
+                    var rePwd = $('#rePwd').val();
+                    // $.post(
+                    //     "setNewPwd",
+                    //     {pwd:pwd,rePwd:rePwd},
+                    //     function(res){
+                    //         // console(res);
+                    //         alert(res);
+                    //     },
+                    //     'json',
+                    // )
+
+                    $.ajax({
+                        url:"{:url('setNewPwd')}",
+                        type :'post',
+                        data:{pwd:pwd,rePwd:rePwd},
+                        dataType:'json',
+                        async:true,
+                        success:function(res){
+                            if(res.code == 1){
+                                layer.msg(res.font,{icon:res.code},function(){
+                                    var a = confirm('是否前往登录页面？');
+                                    if(a == true){
+                                        window.location.href = "login";
+                                    };
+                                });
+                            }else{
+                                layer.msg(res.font,{icon:res.code});
+                            }
+                        }
+                    })
+                })
+            })
+        })
+    </script>

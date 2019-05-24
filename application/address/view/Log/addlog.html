@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+   <form action="{:url('doaddlog')}" method="post">
+    <h1>新增收货地址</h1>
+    <p>
+
+        用户名：<input type="text" name="c_name">
+    </p>
+    
+    <p>
+        密码：<input type="password"name="c_pwd">
+    </p>
+    
+    <p>
+        收货地址：<input type="text" name="c_dizhi">
+    </p>
+    <p>
+        联系人:<input type="text" name="c_man">     
+    </p>
+    <p>
+    <input type="radio" name="c_man">先生
+    <input type="radio" name="c_man">女士
+</p>
+
+    <p>
+        手机号：<input type="tel" name="c_tel">
+    </p>
+    <p>
+        标签：<input type="checkbox" value="1" name="c_bq">家
+            <input type="checkbox" value="2" name="c_bq">公司
+            <input type="checkbox" value="3" name="c_bq">学校
+    </p>
+    <button class="layui-btn" lay-filter="demo1" lay-submit="">跳转式提交</button>
+</form>
+</body>
+
+    
+    
+</html>

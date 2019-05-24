@@ -1,0 +1,67 @@
+<form class="layui-form" action="">
+    <div class="layui-form-item">
+      <label class="layui-form-label">角色名</label>
+      <div class="layui-input-inline">
+        <input type="text" value="" name="u_name" required lay-verify="required|onlyName" placeholder="请输入角色名" autocomplete="off" class="layui-input">
+      </div>
+    </div>
+    <div class="layui-form-item layui-form-text">
+      <label class="layui-form-label">文本域</label>
+      <div class="layui-input-block">
+        <textarea name="u_desc" placeholder="请输入内容" class="layui-textarea"></textarea>
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <div class="layui-input-block">
+        <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+        <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+      </div>
+    </div>
+  </form>
+   
+  <script>
+  //Demo
+  layui.use(['form','layer'], function(){
+    var form = layui.form;
+    var layer = layui.layer;
+    //自定义验证规则
+    form.verify({
+        onlyName: function(value){
+            var reg = /^\w{1,30}$/;
+            if(!reg.test(value)){
+                return '名称由数字字母下划线组成';
+            }
+            var text;
+            $.ajax({
+                url:"{:url('checkOnly')}",
+                type:'post',
+                async:false,
+                data:{u_name:value},
+                success:function(res){
+                    if(res.code == 2){
+                        text = res.font;
+                    };
+                },
+                dataType:'json',
+            });
+            return text;
+        }
+    });
+    //监听提交
+    form.on('submit(formDemo)', function(data){
+      $.ajax({
+          url:"{:url('addHandle')}",
+          type:'post',
+          data:data.field,
+          success:function(res){
+              if(res.code == 1){
+                  layer.msg(res.font,{icon:res.code});
+                  window.location.href="index";
+              }
+          },
+          dataType:'json',
+      })
+      return false;
+    });
+  });
+  </script>

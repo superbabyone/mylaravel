@@ -1,0 +1,48 @@
+<script src="__STATIC__/layui/layui.js"></script>
+<script src="__STATIC__/login/jquery-3.2.1.min.js"></script>
+    <table border="1">
+        <tr>
+            <td>邮箱</td>
+            <td><input type="text" id="email"></td>
+        </tr>
+        <tr>
+            <td colspan="2"><input type="submit" id="aa" value="找回密码"></td>
+        </tr>
+    </table>
+    <script>
+        $(function(){
+            layui.use(['layer'],function(){
+                $('#aa').click(function(){
+                    var email = $('#email').val();
+                    // $.post(
+                    //     "checkBelongEmail",
+                    //     {email:email},
+                    //     function(res){
+                    //         console.log(res);
+                    //         // if(res.code == 1){
+                    //         //     layer.msg(res.font,{icon:res.code});
+                    //         // }else{
+                    //         //     layer.msg(res.font,{icon:res.code});
+                    //         // }
+                    //     },
+                    //     'json',
+                    // )
+
+                    $.ajax({
+                        url:"{:url('checkBelongEmail')}",
+                        type :'post',
+                        data:{email:email},
+                        dataType:'json',
+                        async:true,
+                        success:function(res){
+                            if(res.code == 1){
+                                layer.msg(res.font,{icon:res.code});
+                            }else{
+                                layer.msg(res.font,{icon:res.code});
+                            }
+                        }                        
+                    })
+                })
+            })
+        })
+    </script>

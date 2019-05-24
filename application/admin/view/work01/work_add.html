@@ -1,0 +1,60 @@
+<form class="layui-form" action="">
+        <div class="layui-form-item">
+          <label class="layui-form-label">图书名称</label>
+          <div class="layui-input-inline">
+            <input type="text" name="book_name" placeholder="请输入图书名" autocomplete="on" class="layui-input">
+          </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">作者</label>
+            <div class="layui-input-inline">
+                <input type="text" name="book_author"   placeholder="请输入作者" autocomplete="on" class="layui-input">
+            </div>
+         </div>
+         <div class="layui-form-item">
+           <label class="layui-form-label">添加时间</label>
+           <div class="layui-input-inline">
+             <input type="text" name="open_time" placeholder="请输入当前时间" autocomplete="on" class="layui-input">
+           </div>
+         </div>
+         <div class="layui-form-item">
+           <label class="layui-form-label">图书内容</label>
+           <div class="layui-input-inline">
+             <textarea name="book_content" cols="30" rows="10" placeholder="请输入图书内容"></textarea>
+           </div>
+         </div>
+        <div class="layui-form-item">
+          <div class="layui-input-inline">
+            <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+          </div>
+        </div>
+      </form>
+       
+      <script>
+      //Demo
+      layui.use(['form','layer'], function(){
+        var form = layui.form;
+        var layer = layui.layer;
+        
+        //监听提交
+        form.on('submit(formDemo)', function(data){
+            $.ajax({
+                url:'workAddHandle',
+                data:data.field,
+                type:'post',
+                dataType:'json',
+                success:function(msg){
+                    if(msg.code==1){
+                        // alert(msg.font);
+                        layer.msg(msg.font,{icon:msg.code,time:3000});
+                        window.location.href="index";
+                    }else{
+                      layer.msg(msg.font,{icon:msg.code});
+                    }
+                }
+            })
+          return false;
+        });
+      });
+      </script>

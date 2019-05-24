@@ -1,0 +1,145 @@
+<!--End Header End--> 
+<div class="i_bg bg_color">
+        <!--Begin 用户中心 Begin -->
+        {include file="public/user_top" /}
+        <div class="m_content">
+        {include file="public/user_left" /}
+        <div class="m_right">
+            <p></p>
+            <div class="mem_tit">收货地址</div>
+            <div class="mem_tit">
+                <a href="#"><img src="__STATIC__/index/images/add_ad.gif" /></a>
+            </div>
+            <!-- 添加 -->
+            <table border="0" class="add_tab" style="width:930px;"  cellspacing="0" cellpadding="0">
+                <tr>
+                  <td width="135" align="right">配送地区</td>
+                  <td colspan="3" style="font-family:'宋体';">
+                      <select class="changearea" id="province">
+                        <option value="0" >--请选择--</option>
+                        {volist name="provinceInfo" id="v"}
+                            <option value="{$v.id}" {if ($addressInfo['province'] == $v['id'])} selected {/if}>{$v.name}</option>
+                        {/volist}
+                      </select>
+                      <select class="changearea" id="city">
+                        <option value="0" >--请选择--</option>
+                        {volist name="cityInfo" id="v"}
+                        <option value="{$v.id}" {if ($addressInfo['city'] == $v['id'])} selected{/if}>{$v.name}</option>
+                        {/volist}
+                      </select>
+                      <select class="changearea" id="area">
+                        <option value="0" >--请选择--</option>
+                        {volist name="areaInfo" id="v"}
+                        <option value="{$v.id}" {if ($addressInfo['area'] == $v['id'])} selected{/if}>{$v.name}</option>
+                        {/volist}
+                      </select>
+                      （必填）
+                  </td>
+                </tr>
+                <tr>
+                    <input type="hidden" value="{$addressInfo.address_id}" id="address_id">
+                  <td align="right">收货人姓名</td>
+                  <td style="font-family:'宋体';"><input type="text" value="{$addressInfo.address_name}" class="add_ipt" id="address_name" />（必填）</td>
+                  <td align="right">联系方式</td>
+                  <td style="font-family:'宋体';"><input type="text" value="{$addressInfo.address_tel}" class="add_ipt" id="address_tel"/>（必填）</td>
+                </tr>
+                <tr>
+                  <td align="right">详细地址</td>
+                  <td style="font-family:'宋体';"><input type="text" value="{$addressInfo.address_detail}" class="add_ipt" id="address_detail"/>（必填）</td>
+                  <td align="right">邮政编码</td>
+                  <td style="font-family:'宋体';"><input type="text" value="{$addressInfo.address_mail}" class="add_ipt" id="address_mail"/></td>
+                </tr>
+                <tr>
+                  <td colspan="4"><input type="checkbox" id="is_default">设置为默认收货地址</td>
+                </tr>
+              </table>
+              <p align="right">
+                  <a href="javascript:;" class="add_b" id="add">修改</a>
+              </p>
+        </div>
+      </div>
+      <script>
+        layui.use(['layer'],function(){
+          var layer = layui.layer;
+      
+          //内容改变
+          $('.changearea').change(function(){
+            var _this = $(this);
+            _this.nextAll('select').html('<option>--请选择--</option>');
+            var id = _this.val();
+            $.ajax({
+              url:"{:url('getArea')}",
+              type:'post',
+              data:{id:id},
+              dataType:'json',
+              success:function(res){
+                var _option = "<option>--请选择--</option>";
+                for(var i=0;i<res.length;i++){
+                  _option += "<option value='"+res[i]['id']+"'>"+res[i]['name']+"</option>"
+                }
+                _this.next('select').html(_option);
+              },
+            });
+          })
+          //点击修改
+          $('#add').click(function(){
+            var _this = $(this);
+            var data = {};
+            data.address_id = $('#address_id').val();
+            data.province = $('#province').val();
+            data.city = $('#city').val();
+            data.area = $('#area').val();
+            data.address_name = $('#address_name').val();
+            data.address_tel = $('#address_tel').val();
+            data.address_detail = $('#address_detail').val();
+            data.address_mail = $('#address_mail').val();
+            data.is_default = $('#is_default').prop('checked');
+            if(data.is_default == true){
+              data.is_default = 1
+            }else{
+              data.is_default = 2
+            }
+            $.ajax({
+              url:"{:url('editHandle')}",
+              type:'post',
+              data:data,
+              dataType:'json',
+              success:function(res){
+                if(res.code == 1){
+                  layer.msg(res.font,{icon:6},function(){
+                      location.href="addressAdd";
+                  });
+                }else{
+                  layer.msg(res.font,{icon:res.code});
+                }
+              }
+            })
+          })
+          //点击设为默认
+          $('.update').click(function(){
+            var _this = $(this);
+            var address_id = _this.parent('p').siblings("table[class=add_t]").attr('address_id');
+            $.ajax({
+              url:'{:url("update")}',
+              type:'post',
+              data:{address_id:address_id},
+              dataType:'json',
+              success:function(res){
+                if(res.code == 1){
+                  layer.msg(res.font,{icon:6});
+                  // _style = _this.parent('p').siblings('div[class=save]');
+                  // console.log(_style);
+                }else{
+                  layer.msg(res.font,{icon:6});
+                }
+              },
+            });
+          })
+          //点击编辑
+          $('.edit').click(function(){
+            var _this = $(this);
+            var address_id = _this.parent('p').siblings("table[class=add_t]").attr('address_id');
+            window.location.href="{:url('Address/edit')}?address_id="+address_id;
+          })
+        })
+      </script>

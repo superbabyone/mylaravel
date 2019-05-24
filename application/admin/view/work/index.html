@@ -1,0 +1,21 @@
+<table id="demo" lay-filter="test"></table>
+
+
+<script type="text/javascript">
+layui.use(['table','layer','jquery'],function(){
+	var table = layui.table,layer = layui.layer, $ = layui.jquery;
+
+	table.render({
+		elem:'#demo', 
+		url:"{:url('indexData')}", 
+		title: '列表页',
+		cols:[[
+			{field: 'id', title: '编号'},
+			{field: 'u_name', title: '用户名'},
+			{field: 'u_man', title: '旅客类型'},
+			{field: 'u_card', title: '证件号'},
+		]]
+	});
+	
+});
+</script>

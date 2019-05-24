@@ -1,0 +1,196 @@
+<!--End Header End--> 
+<div class="i_bg bg_color">
+  <!--Begin 用户中心 Begin -->
+  {include file="public/user_top" /}
+  <div class="m_content">
+  {include file="public/user_left" /}
+  <div class="m_right">
+      <p></p>
+      <div class="mem_tit">收货地址</div>
+      {volist name="addressInfo" id="v"}
+      <div class="address">
+          <div class="a_close" address_id="{$v.address_id}"><a href="javascript:;" class="del"><img src="__STATIC__/index/images/a_close.png" /></a></div>
+          <!-- 展示 -->
+            <div class="save" {if($v.is_default == 1)} style="border: 1px red solid"{/if}>
+            </br>
+            <table border="0"  class="add_t" address_id="{$v.address_id}" align="center" style="width:98%; margin:10px auto;" cellspacing="0" cellpadding="0">
+              <tr>
+                <td align="right" width="80">收货人姓名：</td>
+                <td>{$v.address_name}</td>
+              </tr>
+              <tr>
+                <td align="right">配送区域：</td>
+                <td>{$v.province}{$v.city}{$v.area}</td>
+              </tr>
+              <tr>
+                <td align="right">详细地址：</td>
+                <td>{$v.address_detail}</td>
+              </tr>
+              <tr>
+                <td align="right">联系方式：</td>
+                <td>{$v.address_tel}</td>
+              </tr>
+              <tr>
+                <td align="right">邮编：</td>
+                <td>{$v.address_mail}</td>
+              </tr>
+            </table>
+            <p align="right">
+              {if($v.is_default == 1)}
+                <a href="javascript:;" class="edit" style="color:#ff4e00;">编辑</a>&nbsp; &nbsp;
+              {else/}
+                <a href="javascript:;" class="edit" style="color:#ff4e00;">编辑</a>&nbsp; &nbsp;
+                <a href="javascript:;" class="update" style="color:#ff4e00;">设置为默认收货地址</a>&nbsp; &nbsp; 
+              {/if}
+            </p>
+            </div>
+      </div>
+      {/volist}
+      <div class="mem_tit">
+          <a href="#"><img src="__STATIC__/index/images/add_ad.gif" /></a>
+      </div>
+      <!-- 添加 -->
+      <table border="0" class="add_tab" style="width:930px;"  cellspacing="0" cellpadding="0">
+          <tr>
+            <td width="135" align="right">配送地区</td>
+            <td colspan="3" style="font-family:'宋体';">
+                <select class="changearea" id="province">
+                  <option value="0" selected="selected">--请选择--</option>
+                  {volist name="info" id="v"}
+                  <option value="{$v.id}">{$v.name}</option>
+                  {/volist}
+                </select>
+                <select class="changearea" id="city">
+                  <option value="0" selected="selected">--请选择--</option>
+                </select>
+                <select class="changearea" id="area">
+                  <option value="0" selected="selected">--请选择--</option>
+                </select>
+                （必填）
+            </td>
+          </tr>
+          <tr>
+            <td align="right">收货人姓名</td>
+            <td style="font-family:'宋体';"><input type="text" class="add_ipt" id="address_name" />（必填）</td>
+            <td align="right">联系方式</td>
+            <td style="font-family:'宋体';"><input type="text" class="add_ipt" id="address_tel"/>（必填）</td>
+          </tr>
+          <tr>
+            <td align="right">详细地址</td>
+            <td style="font-family:'宋体';"><input type="text" class="add_ipt" id="address_detail"/>（必填）</td>
+            <td align="right">邮政编码</td>
+            <td style="font-family:'宋体';"><input type="text" class="add_ipt" id="address_mail"/></td>
+          </tr>
+          <tr>
+            <td colspan="4"><input type="checkbox" id="is_default">设置为默认收货地址</td>
+          </tr>
+      </table>
+      <p align="right">
+            <a href="javascript:;" class="add_b" id="add">添加</a>
+      </p>
+  </div>
+</div>
+<script>
+  layui.use(['layer'],function(){
+    var layer = layui.layer;
+
+    //内容改变
+    $('.changearea').change(function(){
+      var _this = $(this);
+      _this.nextAll('select').html('<option>--请选择--</option>');
+      var id = _this.val();
+      $.ajax({
+        url:"{:url('getArea')}",
+        type:'post',
+        data:{id:id},
+        dataType:'json',
+        success:function(res){
+          var _option = "<option>--请选择--</option>";
+          for(var i=0;i<res.length;i++){
+            _option += "<option value='"+res[i]['id']+"'>"+res[i]['name']+"</option>"
+          }
+          _this.next('select').html(_option);
+        },
+      });
+    })
+    //点击添加
+    $('#add').click(function(){
+      var _this = $(this);
+      var data = {};
+      data.province = $('#province').val();
+      data.city = $('#city').val();
+      data.area = $('#area').val();
+      data.address_name = $('#address_name').val();
+      data.address_tel = $('#address_tel').val();
+      data.address_detail = $('#address_detail').val();
+      data.address_mail = $('#address_mail').val();
+      data.is_default = $('#is_default').prop('checked');
+      if(data.is_default == true){
+        data.is_default = 1
+      }else{
+        data.is_default = 2
+      }
+      console.log(data);
+      $.ajax({
+        url:"{:url('addHandle')}",
+        type:'post',
+        data:data,
+        dataType:'json',
+        success:function(res){
+          if(res.code == 1){
+            layer.msg(res.font,{icon:6},function(){
+              location.href="addressAdd";
+            });
+          }else{
+            layer.msg(res.font,{icon:res.code});
+          }
+        }
+      })
+    })
+    //点击设为默认
+    $('.update').click(function(){
+      var _this = $(this);
+      var address_id = _this.parent('p').siblings("table[class=add_t]").attr('address_id');
+      $.ajax({
+        url:'{:url("update")}',
+        type:'post',
+        data:{address_id:address_id},
+        dataType:'json',
+        success:function(res){
+          if(res.code == 1){
+            layer.msg(res.font,{icon:6},function(){
+              location.href="addressAdd";
+            });
+          }else{
+            layer.msg(res.font,{icon:5});
+          }
+        },
+      });
+    })
+    //点击编辑
+    $('.edit').click(function(){
+      var _this = $(this);
+      var address_id = _this.parent('p').siblings("table[class=add_t]").attr('address_id');
+      window.location.href="{:url('Address/edit')}?address_id="+address_id;
+    })
+    //点击叉号
+    $('.del').click(function(){
+      var _this = $(this);
+      var address_id = _this.parent('div[class=a_close]').attr('address_id');
+      $.ajax({
+        url:'{:url("del")}',
+        type:'post',
+        data:{address_id:address_id},
+        dataType:'json',
+        success:function(res){
+          if(res.code == 1){
+            layer.msg(res.font,{icon:6});
+            _this.parents('div[class=address]').remove();
+          }else{
+            layer.msg(res.font,{icon:res.code})
+          }
+        }
+      })
+    })
+  })
+</script>
